@@ -14,6 +14,12 @@ npm run migrate
 npm start
 ```
 
+or docker
+```
+docker build . -t chat
+docker run -p 8080:8080 chat
+```
+
 #### Basic requests
 
 Create an user
@@ -51,7 +57,6 @@ Microservices architecture was selected for this exercise. The app is divided in
 
 - Complete all TODOS in code
 - Use a dependency injection lib
-- Create a dockerfile to generate an image
 - Add a logging middleware
 - Add logs
 - Handle db errors & disconnections
