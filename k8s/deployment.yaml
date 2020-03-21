@@ -1,0 +1,50 @@
+kind: Deployment
+# This deployment is not tested since I don't have Kubernetes installed in my computer
+# Things i think are important are:
+# Configure a persistent volume for the sqllite db
+# Because every time this pod gets rebooted all the info will be lost otherwise
+# Configure a livenessProbe endpoint
+# RollingUpdate, so the service is always up while deploying
+# All env variables are set by the chart
+
+apiVersion: extensions/v1beta1
+metadata:
+  name: chat-node-app
+  namespace: default
+  labels:
+    app: chat-node-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: assap-node-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 40%
+  template:
+    metadata:
+      labels:
+        app: assap-node-app
+    spec:
+      containers:
+      - image: "images/chat-node-app:latest"
+        name: assap-node-app
+        ports:
+        - containerPort: 8080
+        env:
+          - name: NODE_ENV
+            value: 'production'
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 8080
+        volumeMounts:
+        - mountPath: /sqlite-db
+          name: persistent-volume
+      volumes:
+      - name: persistent-volume
+      # This GCE PD must already exist.
+      gcePersistentDisk:
+        pdName: some-disk
+        fsType: ext4
